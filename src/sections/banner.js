@@ -1,15 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import {
-  jsx,
-  Box,
-  Container,
-  Heading,
-  Text,
-  Label,
-  Image,
-  Button,
-} from "theme-ui";
+import { jsx, Box, Container, Heading, Text, Image } from "theme-ui";
 import { useState, useEffect } from "react";
 import Input from "components/input";
 import banner from "assets/images/banner.png";
@@ -66,10 +57,10 @@ const Banner = () => {
             {!wordMeaning && (
               <Box>
                 <Text sx={styles.titleHeading}>
-                  Copy and word and hover to get the meaning
+                  Copy a word and hover here...
                 </Text>
                 <Text as="p">
-                  The Meaning with Setence will be shown here...
+                  We will automatically detect the word and find it's meaning...
                 </Text>
               </Box>
             )}
