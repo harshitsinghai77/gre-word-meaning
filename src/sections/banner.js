@@ -1,6 +1,16 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx, Box, Container, Heading, Text, Image } from "theme-ui";
+import {
+  jsx,
+  Box,
+  Container,
+  Heading,
+  Text,
+  Image,
+  Label,
+  Button,
+} from "theme-ui";
+import { TailSpin } from "react-loader-spinner";
 import { useState, useEffect } from "react";
 import Input from "components/input";
 import banner from "assets/images/banner.png";
@@ -13,6 +23,9 @@ const Banner = () => {
   const [clipboardText, setClipboardText] = useState();
   const [alreadyGranted, setAlreadyGranted] = useState();
   const [wordMeaning, setWordMeaning] = useState();
+  const [wordInput, setWordInput] = useState();
+  const [loader, setLoader] = useState(false);
+  const [error, setError] = useState(false);
 
   const getPermission = async () => {
     const permissionStatus = await navigator.permissions.query(queryOpts);
@@ -23,12 +36,27 @@ const Banner = () => {
 
   const getMeaning = async (word) => {
     if (!word) return;
-    const meaning = await axios.post(`/api/hello`, {
-      term: word,
-    });
-    const wordMeaning = meaning.data.meaning[0].meaning;
-    console.log(wordMeaning);
-    setWordMeaning(wordMeaning);
+    setLoader(true);
+    try {
+      const meaning = await axios.post(`/api/meaning`, {
+        term: word,
+      });
+      const wordMeaning = meaning.data.meaning[0].meaning;
+      if (error) setError(false);
+      setWordMeaning(wordMeaning);
+    } catch {
+      setError(true);
+      setWordMeaning("");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const writtenWord = async () => {
+    if (!wordInput) return;
+    setClipboardText(wordInput);
+    await getMeaning(wordInput);
+    setWordInput("");
   };
 
   const onHoverDivClipboard = async () => {
@@ -44,6 +72,12 @@ const Banner = () => {
     }
   };
 
+  const handleKeyDown = async (event) => {
+    if (event.key === "Enter") {
+      await writtenWord();
+    }
+  };
+
   useEffect(() => {
     getPermission();
   }, []);
@@ -54,7 +88,8 @@ const Banner = () => {
         <Box sx={styles.contentWrapper}>
           <Box sx={styles.content} onMouseEnter={onHoverDivClipboard}>
             <Heading as="h1">{clipboardText}</Heading>
-            {!wordMeaning && (
+            <TailSpin color="#00BFFF" height={40} visible={loader} />
+            {!wordMeaning && !error && (
               <Box>
                 <Text sx={styles.titleHeading}>
                   Copy a word and hover here...
@@ -64,41 +99,46 @@ const Banner = () => {
                 </Text>
               </Box>
             )}
-            {wordMeaning && wordMeaning.adjective && (
+            {error && (
               <Box>
-                Adjective:
-                {wordMeaning.adjective.map((el) => (
-                  <Box>
-                    <Text sx={styles.titleHeading}>{el.definition}</Text>
-                    <Text as="p">{el.example}</Text>
-                  </Box>
-                ))}
+                <Text sx={styles.titleHeading}>
+                  Cannot find the meaning of the word
+                </Text>
+                <Text as="p">Try another word...</Text>
               </Box>
             )}
-            &nbsp;
-            {wordMeaning && wordMeaning.noun && (
-              <Box>
-                Noun:
-                {wordMeaning.noun.map((el) => (
-                  <Box>
-                    <Text sx={styles.titleHeading}>{el.definition}</Text>
-                    <Text as="p">{el.example}</Text>
-                  </Box>
-                ))}
-              </Box>
-            )}
-            &nbsp;
-            {wordMeaning && wordMeaning.adverb && (
-              <Box>
-                Adverb:
-                {wordMeaning.adverb.map((el) => (
-                  <Box>
-                    <Text sx={styles.titleHeading}>{el.definition}</Text>
-                    <Text as="p">{el.example}</Text>
-                  </Box>
-                ))}
-              </Box>
-            )}
+            {wordMeaning &&
+              Object.keys(wordMeaning).map(
+                (el) =>
+                  wordMeaning[el] && (
+                    <Box>
+                      {el}:
+                      {wordMeaning[el].map((el) => (
+                        <Box>
+                          <Text sx={styles.titleHeading}>{el.definition}</Text>
+                          <Text as="p">Example: {el.example}</Text>
+                        </Box>
+                      ))}
+                      &nbsp;
+                    </Box>
+                  )
+              )}
+            <Box sx={styles.subscribe}>
+              <Label htmlFor="text" variant="styles.srOnly">
+                Enter your word here
+              </Label>
+              <Input
+                id="word"
+                type="text"
+                placeholder="Enter your word here"
+                onChange={(e) => setWordInput(e.target.value)}
+                value={wordInput}
+                onKeyDown={handleKeyDown}
+              />
+              <Button variant="primary" onClick={writtenWord}>
+                Meaning
+              </Button>
+            </Box>
           </Box>
           <Box as="figure" sx={styles.illustration}>
             <Image src={banner} alt="banner" />
