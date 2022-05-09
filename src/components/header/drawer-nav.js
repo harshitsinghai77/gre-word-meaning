@@ -3,10 +3,8 @@
 import { IoMdMenu } from "react-icons/io";
 import React, { useContext } from "react";
 import { jsx, Box, Image } from "theme-ui";
-import { Link } from "react-scroll";
 import { DrawerContext } from "contexts/drawer/drawer-context";
 import Drawer from "components/drawer";
-import Logo from "components/logo";
 import close from "assets/images/icons/close.png";
 
 const DrawerNav = () => {
@@ -38,11 +36,7 @@ const DrawerNav = () => {
       maskStyle={styles.mask}
       drawerStyle={styles.drawer}
       closeBtnStyle={styles.close}
-    >
-      <Box sx={styles.wrapper}>
-        <Logo sx={styles.logo} />
-      </Box>
-    </Drawer>
+    ></Drawer>
   );
 };
 export default DrawerNav;

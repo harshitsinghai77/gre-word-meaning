@@ -1,10 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, Box, Text, Container } from "theme-ui";
-import Logo from "components/logo";
-import { Link } from "components/link";
-import FooterWidget from "components/footer-widget";
 import { rgba } from "polished";
+import TwitterLogo from "assets/images/icons/twitter.png";
 
 export default function Footer() {
   return (
@@ -12,11 +10,13 @@ export default function Footer() {
       <Container>
         <Box sx={styles.footerTopInner}>
           <Box sx={styles.about}>
-            <Box sx={styles.logo}>
-              <Logo />
-            </Box>
             <Text as="p" sx={styles.copyright}>
-              Copyright by {new Date().getFullYear()} harshitsinghai77
+              Copyright {new Date().getFullYear()} by harshitsinghai77
+            </Text>
+            <Text as="p" sx={styles.copyright}>
+              <a href="https://twitter.com/harshit_778" target="_blank">
+                <img src={TwitterLogo} />
+              </a>
             </Text>
           </Box>
         </Box>
