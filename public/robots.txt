@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://startup-agency-beta.vercel.app
+Host: https://gre-word-meaning.vercel.app/
 
 # Sitemaps
-Sitemap: https://startup-agency-beta.vercel.app/sitemap.xml
+Sitemap: https://gre-word-meaning.vercel.app/
